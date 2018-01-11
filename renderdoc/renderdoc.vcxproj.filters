@@ -109,6 +109,9 @@
     <Filter Include="Common\Serialise\Codecs">
       <UniqueIdentifier>{dc39ebda-045d-4d75-8ef9-0c927be3c7ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdparty\RGP">
+      <UniqueIdentifier>{9fc09f3b-458f-4a4f-89e2-16a58ebd86db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="maths\camera.h">
@@ -374,6 +377,9 @@
     </ClInclude>
     <ClInclude Include="os\posix\posix_network.h">
       <Filter>OS\Posix</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\RGP\RGP_API.h">
+      <Filter>3rdparty\RGP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
