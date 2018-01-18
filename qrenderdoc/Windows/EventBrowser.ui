@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>279</width>
+    <width>281</width>
     <height>298</height>
    </rect>
   </property>
@@ -192,6 +192,20 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="rgpHack">
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/resources.qrc">
+         <normaloff>:/connect.png</normaloff>:/connect.png</iconset>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -364,8 +378,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/resources.qrc">
-          <normaloff>:/arrow_left.png</normaloff>:/arrow_left.png
-         </iconset>
+          <normaloff>:/arrow_left.png</normaloff>:/arrow_left.png</iconset>
         </property>
         <property name="autoRaise">
          <bool>true</bool>
