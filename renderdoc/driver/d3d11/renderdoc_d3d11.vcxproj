@@ -98,6 +98,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="af.cpp" />
     <ClCompile Include="d3d11_analyse.cpp" />
     <ClCompile Include="d3d11_common.cpp" />
     <ClCompile Include="d3d11_context.cpp" />
@@ -122,6 +123,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="af.h" />
     <ClInclude Include="d3d11_common.h" />
     <ClInclude Include="d3d11_context.h" />
     <ClInclude Include="d3d11_debug.h" />

@@ -84,6 +84,9 @@
     <ClCompile Include="precompiled.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
+    <ClCompile Include="af.cpp">
+      <Filter>Wrapped</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d11_replay.h">
@@ -136,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="precompiled.h">
       <Filter>PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="af.h">
+      <Filter>Wrapped</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

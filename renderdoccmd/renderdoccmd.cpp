@@ -221,12 +221,20 @@ struct ThumbCommand : public Command
     parser.add<uint32_t>(
         "max-size", 's',
         "The maximum dimension of the thumbnail. Default is 0, which is unlimited.", false, 0);
+	parser.add<string>("ini", 0, "Additional features by .ini file", false);
   }
   virtual const char *Description() { return "Saves a capture's embedded thumbnail to disk."; }
   virtual bool IsInternalOnly() { return false; }
   virtual bool IsCaptureCommand() { return false; }
   virtual int Execute(cmdline::parser &parser, const CaptureOptions &)
   {
+	  if (parser.exist("ini"))
+	  {
+		  string filename = parser.get<string>("ini");
+		  int ret = af_init_by_config(filename.c_str());
+		  std::cout << "Additional features initialized by \"" << filename << "\" -> " << ret << std::endl;
+	  }
+
     std::vector<std::string> rest = parser.rest();
     if(rest.empty())
     {
@@ -503,6 +511,7 @@ struct ReplayCommand : public Command
                        "Instead of replaying locally, replay on this host over the network.", false);
     parser.add<uint32_t>("remote-port", 0, "If --remote-host is set, use this port.", false,
                          RENDERDOC_GetDefaultRemoteServerPort());
+	parser.add<string>("ini", 0, "Additional features by .ini file", false);
   }
   virtual const char *Description()
   {
@@ -512,6 +521,13 @@ struct ReplayCommand : public Command
   virtual bool IsCaptureCommand() { return false; }
   virtual int Execute(cmdline::parser &parser, const CaptureOptions &)
   {
+	  if (parser.exist("ini"))
+	  {
+		  string filename = parser.get<string>("ini");
+		  int ret = af_init_by_config(filename.c_str());
+		  std::cout << "Additional features initialized by \"" << filename << "\" -> " << ret << std::endl;
+	  }
+
     std::vector<std::string> rest = parser.rest();
     if(rest.empty())
     {

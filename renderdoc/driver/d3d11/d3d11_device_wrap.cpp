@@ -27,6 +27,8 @@
 #include "driver/d3d11/d3d11_context.h"
 #include "driver/d3d11/d3d11_resources.h"
 
+#include "af.h"
+
 bool WrappedID3D11Device::Serialise_CreateBuffer(const D3D11_BUFFER_DESC *pDesc,
                                                  const D3D11_SUBRESOURCE_DATA *pInitialData,
                                                  ID3D11Buffer **ppBuffer)
@@ -427,7 +429,25 @@ bool WrappedID3D11Device::Serialise_CreateTexture2D(const D3D11_TEXTURE2D_DESC *
         ~(D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX |
           D3D11_RESOURCE_MISC_GDI_COMPATIBLE | D3D11_RESOURCE_MISC_SHARED_NTHANDLE);
 
-    if(HasInitialData)
+	if (HasInitialData) {
+		const DDS_info *dst = NULL;
+		const vector<pair<DDS_info, DDS_info>> *vec = af_get_replace_vector();
+		for (auto it = vec->begin(); it != vec->end(); it ++) {
+			if ((int)descs[0].SysMemSlicePitch > it->first.len)
+				continue;
+			int diff = memcmp(descs[0].pSysMem, it->first.buff, descs[0].SysMemSlicePitch);
+			if (diff == 0) {
+				dst = &it->second;
+				break;
+			}
+		}
+		if (dst) {
+			printf("Id %llu -> %s\n", pTexture.val(), dst->file.c_str());
+			memcpy(const_cast<void *>(descs[0].pSysMem), dst->buff, descs[0].SysMemSlicePitch);
+		}
+	}
+
+	if(HasInitialData)
       hr = m_pDevice->CreateTexture2D(&Descriptor, &descs[0], &ret);
     else
       hr = m_pDevice->CreateTexture2D(&Descriptor, NULL, &ret);

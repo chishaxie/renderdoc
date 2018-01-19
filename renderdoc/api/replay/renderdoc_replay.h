@@ -189,6 +189,8 @@ typedef void *(RENDERDOC_CC *pRENDERDOC_AllocArrayMem)(uint64_t sz);
 
 #include "basic_types.h"
 
+extern "C" RENDERDOC_API int af_init_by_config(const char *filename);
+
 #ifdef RENDERDOC_EXPORTS
 struct ResourceId;
 
@@ -223,6 +225,7 @@ struct ResourceId
   bool operator!=(const ResourceId u) const { return id != u.id; }
   DOCUMENT("Compares two ``ResourceId`` objects for less-than.");
   bool operator<(const ResourceId u) const { return id < u.id; }
+  uint64_t val() const { return id; }
 private:
   uint64_t id;
 
