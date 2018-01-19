@@ -459,7 +459,16 @@ bool WrappedID3D11Device::Serialise_CreateTexture2D(const D3D11_TEXTURE2D_DESC *
 			}
 			if (dst) {
 				printf("Replace Id %llu -> %s\n", pTexture.val(), dst->file.c_str());
-				memcpy(const_cast<void *>(descs[0].pSysMem), dst->buff, descs[0].SysMemSlicePitch);
+				char *cur = (char *)dst->buff;
+				int left = dst->len;
+				for (auto it = descs.begin(); it != descs.end(); it++) {
+					if ((int)it->SysMemSlicePitch > left)
+						break;
+					memcpy(const_cast<void *>(it->pSysMem), cur, it->SysMemSlicePitch);
+					cur += it->SysMemSlicePitch;
+					left -= it->SysMemSlicePitch;
+				}
+				//memcpy(const_cast<void *>(descs[0].pSysMem), dst->buff, descs[0].SysMemSlicePitch);
 			}
 		}
 	}
