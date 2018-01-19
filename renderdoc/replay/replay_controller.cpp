@@ -37,6 +37,8 @@
 #include "stb/stb_image_write.h"
 #include "tinyexr/tinyexr.h"
 
+#include "../driver/d3d11/af.h"
+
 float ConvertComponent(const ResourceFormat &fmt, byte *data)
 {
   if(fmt.compByteWidth == 8)
@@ -1581,6 +1583,8 @@ ReplayStatus ReplayController::CreateDevice(const char *logfile)
 
   IReplayDriver *driver = NULL;
   status = RenderDoc::Inst().CreateReplayDriver(driverType, logfile, &driver);
+
+  af_open_scan_event();
 
   if(driver && status == ReplayStatus::Succeeded)
   {

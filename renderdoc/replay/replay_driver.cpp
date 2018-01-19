@@ -22,8 +22,12 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
+#include <sstream>
+
 #include "replay_driver.h"
 #include "maths/formatpacking.h"
+
+#include "../driver/d3d11/af.h"
 
 DrawcallDescription *SetupDrawcallPointers(vector<DrawcallDescription *> *drawcallTable,
                                            rdctype::array<DrawcallDescription> &draws,
@@ -31,6 +35,8 @@ DrawcallDescription *SetupDrawcallPointers(vector<DrawcallDescription *> *drawca
                                            DrawcallDescription *&previous)
 {
   DrawcallDescription *ret = NULL;
+
+  DrawcallDescription *last = NULL;
 
   for(size_t i = 0; i < draws.size(); i++)
   {
@@ -75,8 +81,41 @@ DrawcallDescription *SetupDrawcallPointers(vector<DrawcallDescription *> *drawca
         (*drawcallTable)[draw->eventID] = draw;
       }
 
+	  //printf("%u\n", draw->eventID);
+
       ret = previous = draw;
+
+	  if (af_check_scan_event()) {
+		  if (draw->events.count > 0) {
+			  bool find = false;
+			  for (auto it = draw->events.begin(); it != draw->events.end(); it++) {
+				  const set<uint64_t> *ids = af_get_trace_resource_ids();
+				  for (auto it2 = ids->begin(); it2 != ids->end(); it2++) {
+					  std::stringstream ss;
+					  ss << "\n    id: ResID_" << (*it2 + 1) << "\n";
+					  char target[64];
+					  strcpy_s(target, ss.str().c_str());
+					  if (strstr(it->eventDesc.c_str(), target) != NULL) {
+						  printf("EventID %u Hit %llu, Last %u\n", draw->eventID, *it2, last->eventID);
+						  af_add_save_event_id(draw->eventID);
+						  af_add_save_event_id(last->eventID);
+						  find = true;
+						  break;
+					  }
+				  }
+				  if (find)
+					  break;
+			  }
+		  }
+		  if (draw->name && strstr(draw->name.c_str(), "Dispatch(") != NULL) {
+			  printf("EventID %u Hit fin, Last %u\n", draw->eventID, last->eventID);
+			  af_add_save_event_id(last->eventID);
+			  af_close_scan_event();
+		  }
+	  }
     }
+
+	last = draw;
   }
 
   return ret;

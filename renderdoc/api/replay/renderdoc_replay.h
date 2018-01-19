@@ -191,6 +191,8 @@ typedef void *(RENDERDOC_CC *pRENDERDOC_AllocArrayMem)(uint64_t sz);
 
 extern "C" RENDERDOC_API int af_init_by_config(const char *filename);
 
+extern "C" RENDERDOC_API int af_get_event_id(uint32_t *ret, size_t size);
+
 #ifdef RENDERDOC_EXPORTS
 struct ResourceId;
 

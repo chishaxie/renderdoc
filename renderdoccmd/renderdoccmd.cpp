@@ -221,7 +221,7 @@ struct ThumbCommand : public Command
     parser.add<uint32_t>(
         "max-size", 's',
         "The maximum dimension of the thumbnail. Default is 0, which is unlimited.", false, 0);
-	parser.add<string>("ini", 0, "Additional features by .ini file", false);
+	//parser.add<string>("ini", 0, "Additional features by .ini file", false);
   }
   virtual const char *Description() { return "Saves a capture's embedded thumbnail to disk."; }
   virtual bool IsInternalOnly() { return false; }
@@ -511,7 +511,8 @@ struct ReplayCommand : public Command
                        "Instead of replaying locally, replay on this host over the network.", false);
     parser.add<uint32_t>("remote-port", 0, "If --remote-host is set, use this port.", false,
                          RENDERDOC_GetDefaultRemoteServerPort());
-	parser.add<string>("ini", 0, "Additional features by .ini file", false);
+	parser.add<string>("ini", 0, "Additional features by .ini file.", false);
+	parser.add<string>("af-out", 0, "Additional features output dir.", false);
   }
   virtual const char *Description()
   {
@@ -602,10 +603,61 @@ struct ReplayCommand : public Command
 
       if(status == ReplayStatus::Succeeded)
       {
-        DisplayRendererPreview(renderer, parser.get<uint32_t>("width"),
-                               parser.get<uint32_t>("height"));
+		  if (parser.exist("af-out")) {
+			  string dir = parser.get<string>("af-out");
+			  uint32_t ids[4096];
+			  int num = af_get_event_id(ids, sizeof(ids) / sizeof(ids[0]));
+			  for (int i = 0; i < num; i++) {
+				  renderer->SetFrameEvent(ids[i], true);
+				  rdctype::array<TextureDescription> texs = renderer->GetTextures();
+				  //texs[0].
+				  ResourceId target;
+				  auto views = renderer->GetD3D11PipelineState().m_OM.RenderTargets;
+				  for (auto it = views.begin(); it != views.end(); it++) {
+					  target = it->Resource;
+					  break;
+				  }
+				  TextureSave ts;
+				  ts.alpha = AlphaMapping::Discard;
+				  //ts.alphaCol
+				  //ts.alphaColSecondary
+				  //ts.channelExtract
+				  ts.comp.blackPoint = 0.0;
+				  ts.comp.whitePoint = 1.0;
+				  ts.destType = FileType::PNG;
+				  auto textures = renderer->GetTextures();
+				  for (auto it2 = textures.begin(); it2 != textures.end(); it2++) {
+					  if (it2->ID == target) {
+						  ts.id = it2->ID;
+					  }
+				  }
+				  //ts.jpegQuality
+				  ts.mip = 0;
+				  ts.sample.mapToArray = false;
+				  //ts.sample.ResolveSamples
+				  ts.sample.sampleIndex = 0;
+				  ts.slice.cubeCruciform = false;
+				  ts.slice.sliceGridWidth = 1;
+				  ts.slice.sliceIndex = 0;
+				  ts.slice.slicesAsGrid = false;
+				  //ts.typeHint
+				  std::stringstream ss;
+				  ss << dir;
+				  if (dir.at(dir.length() - 1) != '\\')
+					  ss << '\\';
+				  ss << "p_" << ids[i] << ".png";
+				  bool ret = renderer->SaveTexture(ts, ss.str().c_str());
+				  printf("Save event %u %s\n", ids[i], ret? "succ": "fail");
+			  }
+			  printf("FIN\n");
+		  }
+		  else {
 
-        renderer->Shutdown();
+			  DisplayRendererPreview(renderer, parser.get<uint32_t>("width"),
+				  parser.get<uint32_t>("height"));
+
+			  renderer->Shutdown();
+		  }
       }
       else
       {
