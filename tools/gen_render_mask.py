@@ -50,6 +50,9 @@ def gen(scan_dir):
             # print img[0], 'b'
             im_mask.paste(im_black, mask=diff)
         im_last = im
-    im_mask.show()
+    # im_mask.show()
+    return im_mask
 
-gen(scan_dir)
+
+if __name__ == '__main__':
+    gen(scan_dir)
